@@ -30,8 +30,8 @@ public class AvroClassProcessor extends Java8BaseListener {
 
   @Override
   public void enterNormalClassDeclaration(NormalClassDeclarationContext ctx) {
-    String superClassName = ctx.superclass().getText();
-    if ("extendsorg.apache.avro.specific.SpecificRecordBase".equals(superClassName)) {
+    String superClassName = ctx.superclass().classType().getText();
+    if ("org.apache.avro.specific.SpecificRecordBase".equals(superClassName)) {
       String className = ctx.Identifier().getText();
       this.classDefinition = this.classDefinition.toBuilder().className(className).build();
     }
@@ -45,19 +45,23 @@ public class AvroClassProcessor extends Java8BaseListener {
     } else {
       String type = ctx.unannType().getText();
       String fieldName = ctx.variableDeclaratorList().getText();
-      FieldMemberDefinition fieldMemberDefinition = FieldMemberDefinition.builder()
-          .name(fieldName)
-          .type(FieldMemberDataType.fromAvro(type))
-          .build();
-      List<FieldMemberDefinition> fields = Stream.concat(
-          this.classDefinition.getMemberFields().stream(),
-          Stream.of(fieldMemberDefinition)
-      ).collect(Collectors.toList());
-      this.classDefinition = this.classDefinition.toBuilder()
-          .memberFields(fields)
-          .build();
+      addField(type, fieldName);
       log.info("Generate field: " + type + " " + fieldName);
     }
+  }
+
+  private void addField(String type, String fieldName){
+    FieldMemberDefinition fieldMemberDefinition = FieldMemberDefinition.builder()
+        .name(fieldName)
+        .type(FieldMemberDataType.fromAvro(type))
+        .build();
+    List<FieldMemberDefinition> fields = Stream.concat(
+        this.classDefinition.getMemberFields().stream(),
+        Stream.of(fieldMemberDefinition)
+    ).collect(Collectors.toList());
+    this.classDefinition = this.classDefinition.toBuilder()
+        .memberFields(fields)
+        .build();
   }
 
   private boolean isExcluded(FieldDeclarationContext ctx) {
