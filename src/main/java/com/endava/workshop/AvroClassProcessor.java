@@ -16,6 +16,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 @Getter
 public class AvroClassProcessor extends Java8BaseListener {
 
+  private static final String AVRO_BASE_CLASS = "org.apache.avro.specific.SpecificRecordBase";
   private ClassDefinition classDefinition;
 
   public AvroClassProcessor() {
@@ -35,7 +36,7 @@ public class AvroClassProcessor extends Java8BaseListener {
   @Override
   public void enterNormalClassDeclaration(NormalClassDeclarationContext ctx) {
     String superClassName = ctx.superclass().classType().getText();
-    if ("org.apache.avro.specific.SpecificRecordBase".equals(superClassName)) {
+    if (AVRO_BASE_CLASS.equals(superClassName)) {
       String className = ctx.Identifier().getText();
       addClassName(className);
     }
