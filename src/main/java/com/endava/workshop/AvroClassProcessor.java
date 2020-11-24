@@ -14,11 +14,11 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 @Slf4j
 @Getter
-public class GenerateAdditionalCode extends Java8BaseListener {
+public class AvroClassProcessor extends Java8BaseListener {
 
   private ClassDefinition classDefinition;
 
-  public GenerateAdditionalCode(Java8Parser parser) {
+  public AvroClassProcessor() {
     this.classDefinition = ClassDefinition.builder().build();
   }
 

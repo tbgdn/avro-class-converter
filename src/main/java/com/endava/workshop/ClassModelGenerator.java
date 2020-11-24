@@ -27,7 +27,7 @@ public class ClassModelGenerator {
     ParseTree parseTree = parser.compilationUnit();
     ParseTreeWalker walker = new ParseTreeWalker();
     log.info("Process the loaded file...");
-    GenerateAdditionalCode modelGenerator = new GenerateAdditionalCode(parser);
+    AvroClassProcessor modelGenerator = new AvroClassProcessor();
     walker.walk(modelGenerator, parseTree);
     log.info("Generated model:\n{}", modelGenerator.getClassDefinition());
     log.info("Generate typescript");
