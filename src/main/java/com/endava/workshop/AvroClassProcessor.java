@@ -25,6 +25,10 @@ public class AvroClassProcessor extends Java8BaseListener {
   @Override
   public void enterPackageDeclaration(PackageDeclarationContext ctx) {
     String packageName = ctx.Identifier().stream().map(ParseTree::getText).collect(Collectors.joining("."));
+    addPackage(packageName);
+  }
+
+  private void addPackage(String packageName) {
     this.classDefinition = this.classDefinition.toBuilder().packageName(packageName).build();
   }
 
@@ -33,13 +37,16 @@ public class AvroClassProcessor extends Java8BaseListener {
     String superClassName = ctx.superclass().classType().getText();
     if ("org.apache.avro.specific.SpecificRecordBase".equals(superClassName)) {
       String className = ctx.Identifier().getText();
-      this.classDefinition = this.classDefinition.toBuilder().className(className).build();
+      addClassName(className);
     }
+  }
+
+  private void addClassName(String className) {
+    this.classDefinition = this.classDefinition.toBuilder().className(className).build();
   }
 
   @Override
   public void enterFieldDeclaration(FieldDeclarationContext ctx) {
-    super.enterFieldDeclaration(ctx);
     if (isExcluded(ctx)) {
       //  ignore this
     } else {
@@ -50,7 +57,7 @@ public class AvroClassProcessor extends Java8BaseListener {
     }
   }
 
-  private void addField(String type, String fieldName){
+  private void addField(String type, String fieldName) {
     FieldMemberDefinition fieldMemberDefinition = FieldMemberDefinition.builder()
         .name(fieldName)
         .type(FieldMemberDataType.fromAvro(type))
